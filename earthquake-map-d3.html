@@ -23,10 +23,13 @@ d3.csv('earthquake.csv').then(handleData)
 
 // Handle the earthquake data
 function handleData(data) {
+	const rExtent = d3.extent(data, d => d.Magnitude)
+	console.log(rExtent)
+
     // Make a scale for magnitude
-    // const yScale = d3.scaleLinear()
-    //     .domain([0, d3.max(data.map(v => v.Magnitude))])
-    //     .range([1, 50])
+    const rScale = d3.scaleLinear()
+        .domain(rExtent)
+        .range([5, 25])
 
 	// Create a projection
 	const projection = d3.geoMercator()
@@ -69,7 +72,7 @@ function handleData(data) {
 		.attr('cy', d => projection([d.Longitude, d.Latitude])[1])
 		// Set the radius of the circles. I used Magnitude/5 as a 
 		// ballpark number. This could use some research
-		.attr('r', d => d.Magnitude / 5)
+		.attr('r', d => rScale(d.Magnitude))
         // .attr('r', d => 50 - yScale(d.Magnitude))
 		.style('fill', 'rgb(255,91,67)')
 		.style('opacity', 0.1)	
@@ -78,3 +81,6 @@ function handleData(data) {
 </script>
 </body>
 </html>
+
+<!-- Date, Time,   Latitude,Longitude, Type,       Depth,  Depth Error, Depth Seismic Stations, Magnitude,Magnitude Type,Magnitude Error,Magnitude Seismic Stations,Azimuthal Gap,Horizontal Distance,Horizontal Error,Root Mean Square,ID,Source,Location Source,Magnitude Source,Status
+01/02/1965,13:44:18,19.246, 145.616,   Earthquake, 131.6,  ,            ,                       6,MW,,,,,,,ISCGEM860706,ISCGEM,ISCGEM,ISCGEM,Automatic -->
