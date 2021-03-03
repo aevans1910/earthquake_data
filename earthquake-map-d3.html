@@ -22,11 +22,13 @@ const height = 500
 d3.csv('earthquake.csv').then(handleData)
 
 // Handle the earthquake data
-function handleData(data) {
+function handleData(earthquakeData) {
+	const data = earthquakeData.filter(d => d.Magnitude > 8)
+
 	const rExtent = d3.extent(data, d => d.Magnitude)
 	console.log(rExtent)
 
-    // Make a scale for magnitude
+	// Make a scale for magnitude
     const rScale = d3.scaleLinear()
         .domain(rExtent)
         .range([5, 25])
@@ -75,7 +77,66 @@ function handleData(data) {
 		.attr('r', d => rScale(d.Magnitude))
         // .attr('r', d => 50 - yScale(d.Magnitude))
 		.style('fill', 'rgb(255,91,67)')
-		.style('opacity', 0.1)	
+		.style('opacity', 0.1)
+		.on('mouseover', function (e, d) {
+			console.log(d3.select(".info-box"))
+			d3.select(this)
+				.style('fill', 'rgb(255,91,67)')
+				.style('opacity', 1)
+			d3.select('.info-box')
+				.attr('x', d3.select(this).attr('cx'))
+				.attr('y', d3.select(this).attr('cy'))
+				.attr('display', 'yes')
+				.attr('transform', `translate(${d3.select(this).attr('cx')}, ${d3.select(this).attr('cy')})`)
+			d3.select('.magnitude-text')
+				.text(d.Magnitude)
+			d3.select('.date-text')
+				.text(d.Date)
+		})
+		.on('mouseout', function (d, i) {
+			d3.select(this)
+				.style('fill', 'rgb(255,91,67)')
+				.style('opacity', 0.1)
+				d3.select('.info-box')
+					.attr('display', 'none')
+		})
+
+	const infoBox = d3.select('svg')
+		.append('g')
+		.attr('class', 'info-box')
+		// .attr('display', 'none')
+
+	// Make the black box 
+	infoBox.append('rect')
+		.attr('width', 100)
+		.attr('height', 100)
+		.attr('fill', 'black')
+
+	// Display the magnitude here
+	infoBox
+		.append('text')
+		.text('0.0')
+		.attr('fill', 'white')
+		.attr('dx', 50)
+		.attr('dy', 40)
+		.attr('text-anchor', 'middle')
+		.attr('font-size', 15)
+		.attr('font-family', 'Helvetica')
+		.attr('alignment-baseline', 'middle')
+		.attr('class', 'magnitude-text')
+
+	infoBox
+		.append('text')
+		.text('0.0')
+		.attr('fill', 'white')
+		.attr('dx', 50)
+		.attr('dy', 60)
+		.attr('text-anchor', 'middle')
+		.attr('font-size', 15)
+		.attr('font-family', 'Helvetica')
+		.attr('alignment-baseline', 'middle')
+		.attr('class', 'date-text')
+		
 }
 
 </script>
